@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Report page</title>
+		<!-- <link rel="stylesheet" href="styleReport.css?=2" type="text/css" /> -->
+		<link rel="stylesheet" href="styleReportNew.css?=10" type="text/css" />
+
+    </head>
+<body>
+    <div id="wrap">
+        <h1>Servisný záznam</h1> 
+        <form method="POST" action="" id="form"> 
+            <fieldset> 
+                <legend>OBJEDNÁVATEĽ</legend>
+                    <p id="customerInfo">
+                        <select id="customerName" name="customerName">
+                            <option></option>
+                            <option>Humanic</option>
+                            <option>Martinus</option>
+                        </select>
+                    
+                        <span id="addCustomerInfo"></span>
+                    </p>
+            </fieldset>
+            <fieldset>
+                <legend>UŽÍVATEĽ</legend>
+                <p id="officeInfo">
+                    <select id="officeName" name="officeName">
+                    </select>
+                
+                    <span id="addOfficeInfo"></span>
+                </p>
+            </fieldset>
+            <fieldset>
+                <legend>Dátum / Doprava</legend>
+                <p>
+                    <input id="date" name="date" type="date" value="">
+                    <input id="transportKm" name="transportKm" type="number" value="10" placeholder="Doprava km">
+                    <input id="transportTime" name="transportTime" type="number" value="0.5" placeholder="Doprava Hodiny">
+                </p>
+            </fieldset>
+            <fieldset>
+                <legend>F-Plyny / Leaklog</legend>
+                <p>
+                    <label id="tit">5-50 ton CO2-eq</label>
+                    <label for="fpYes">yes</label>
+                    <input id="fpYes" type="radio" name="fp" value="1">
+                    <label for="fpNo">no</label>
+                    <input id="fpNo" type="radio" name="fp" checked value="0">
+                    <label for="quantityCircuits">Počet</label>
+                    <input id="quantityCircuits" type="number" name="quantityCircuits">
+                </p>
+                <p>
+                    <label id="tit">50-500ton CO2-eq</label>
+                    <label for="fpYesBig">yes</label>
+                    <input id="fpYesBig" type="radio" name="fpBig" value="1">
+                    <label for="fpNoBig">no</label>
+                    <input id="fpNoBig" type="radio" name="fpBig" checked value="0">
+                    <label for="quantityCircuits">Počet</label>
+                    <input id="quantityCircuitsBig" type="number" name="quantityCircuitsBig">
+                </p>
+                <p>
+                    <label id="tit">Leaklog</label>
+                    <label for="LeaklogYes">yes</label>
+                    <input id="LeaklogYes" type="radio" name="leaklog" value="Áno">
+                    <label for="LeaklogNo">no</label>
+                    <input id="LeaklogNo" type="radio" name="leaklog" checked value="Nie">
+                </p>
+            </fieldset>
+            <fieldset>
+                <legend>TECHNIK</legend>
+                <div id="technik">
+                    <p id="paragTech">
+                        <input id="technicianName" name="technicianName[]" type="text" placeholder="Meno TECHNIKA">
+                        <input id="startTime" name="startTime[]" type="time">
+                        <input id="finishTime" name="finishTime[]" type="time" value="">
+                        <!-- <label for="mainTech">HlavTech</label>
+                        <input id="mainTech" class="radio" name="mainTech0" type="radio"> -->
+                    </p>
+                    <button id="addTechnik">add technik</button>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Popis zásahu</legend>
+                <textarea name="description" placeholder="Popis zásahu"></textarea>
+            </fieldset>
+            <fieldset>
+                <legend>Výsledok / Odporúčania</legend>
+                <textarea name="descriptionResult" rows="5" cols="83" placeholder="Výsledok / Odporúčania"></textarea>
+            </fieldset>
+            <fieldset>
+                <legend>Identifikácia ZARIADENIA</legend>
+                <input name="typDevice" type="text" placeholder="Typ">
+                <input name="snDevice" type="text" placeholder="A.R./series N°">
+            </fieldset>
+            <fieldset>
+                <legend>CHLADIVO</legend>
+                <p>
+                    <select id="coolant" name="coolant">
+                        <option>R410A</option>
+                        <option>R407C</option>
+                        <option>R32</option>
+                        <option>R134A</option>
+                    </select>
+                    <input name="newCoolant" type="number" placeholder="Doplnené (nové) kg">
+                    <input name="oldCoolant" type="number" placeholder="Odobrané (už nepoužité) kg">
+                </p>
+            </fieldset>
+            <fieldset>
+                <legend>OLEJ</legend>
+                <p>
+                    <input name="oil" placeholder="Zadajte typ oleja">
+                    <input name="newOil" type="number" placeholder="Doplnené (nové) kg">
+                    <input name="oldOil" type="number" placeholder="Odobrané (už nepoužité) kg">
+                </p>
+            </fieldset>
+            <fieldset>
+                <legend>NÁHRADNÉ DIELY</legend>
+                <div id="spareParts">
+                    <p>
+                        <input id="spare" name="nameSparePart[]" type="text" placeholder="Nazov dielu">
+                        <input id="quantitySpare" name="quantitySparePart[]" type="number" placeholder="Množstvo">
+                        <input id="noteSpare" name="noteSparePart[]" type="text" placeholder="Pozanámka">
+                        
+                        <button id="addSpareParts">add spare part</button>
+                    </p>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Podpis technika</legend>
+                <p>
+                    
+                    <canvas id="canvas" name="asd" width="400" height="250"
+                    style="background-color:#eee; border: 1px solid #ccc; margin:10px;"></canvas>
+                </p>
+                <div id="img"></div>
+            </fieldset>
+            <fieldset>
+                    <p>
+                        <button id="show" type="submit" value="show">show</button>
+                        <button id="saveSent" type="submit" value="saveSent">save and sent</button>
+                        <button id="sub" type="submit" value="sub">sub</button>
+                    </p>
+            </fieldset>
+        </form>
+    </div>
+</body>
+<script src="script.js?=73"></script>
+</html>
+
+
+<!-- <form action="" method="POST" id="form">
+        <div class="title">OBJEDNÁVATEĽ</div>
+        <div id="customerInfo">
+            <select id="customerName" class="report" name="customerName">
+                <option></option>
+                <option>Humanic</option>
+                <option>Martinus</option>
+            </select>
+        
+            <span id="addCustomerInfo"></span>
+        </div>
+        
+        <div class="title">UŽÍVATEĽ</div>
+        <div id="officeInfo">
+            <select class="report" id="officeName" name="officeName">
+                
+            </select>
+        
+            <span id="addOfficeInfo"></span>
+        </div>
+        
+        <div class="title">Dátum/Doprava</div>
+        <input id="date" class="report" name="date" type="date" value="">
+        <input id="transportKm" class="report" name="transportKm" type="number" value="10" placeholder="Doprava km">
+        <input id="transportTime" class="report" name="transportTime" type="number" value="0.5" placeholder="Doprava Hodiny">
+
+        <div id="technik">
+            <div class="title">TECHNIK</div>
+            <input id="technicianName" class="report" name="technicianName[]" type="text" placeholder="Meno TECHNIKA">
+            <input id="startTime" class="report" name="startTime[]" type="time">
+            <input id="finishTime" class="report" name="finishTime[]" type="time" value="">
+        </div>
+        
+        <button id="addTechnik">add technik</button>
+
+        <div class="title">Popis zásahu</div>
+        <textarea name="description" rows="10" cols="83" placeholder="Popis zásahu"></textarea>
+
+        <div class="title">Výsledok / Odporúčania</div>
+        <textarea name="description" rows="5" cols="83" placeholder="Výsledok / Odporúčania"></textarea>
+
+        <div id="spareParts">
+            <div class="title">NÁHRADNÉ DIELY</div>
+            <input id="spare" class="report" name="nameSparePart" type="text" placeholder="Nazov dielu">
+            <input id="quantitySpare" class="report" name="quantitySparePart" type="number" placeholder="Množstvo">
+            <input id="noteSpare" class="report" name="noteSparePart" type="text" placeholder="Pozanámka">
+        </div>
+
+        <button id="addSpareParts">add spare part</button>
+
+        <div class="title">Identifikácia ZARIADENIA</div>
+        <input class="device" name="deviceType" type="text" placeholder="Type zaridenia">
+        <input class="device" name="deviceSerNum" type="text" placeholder="Seriove cislo">
+
+        <div class="title">CHLADIVO</div>
+        <select class="report" name="coolant">
+            <option>R410A</option>
+            <option>R407C</option>
+            <option>R32</option>
+            <option>R134A</option>
+        </select>
+        <input class="report" name="newCoolant" type="number" placeholder="Doplnené (nové) kg">
+        <input class="report" name="oldCoolant" type="number" placeholder="Odobrané (už nepoužité) kg">
+
+        <div class="title">OLEJ</div>
+        <input class="report" name="oil" placeholder="Zadajte typ oleja">
+        <input class="report" name="newOil" type="number" placeholder="Doplnené (nové) kg">
+        <input class="report" name="oldOil" type="number" placeholder="Odobrané (už nepoužité) kg">
+
+        <input name="sub" type="submit" value="save">
+        <input id="show" type="button" value="show">
+    </form> -->
