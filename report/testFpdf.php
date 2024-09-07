@@ -2,15 +2,6 @@
 require('fpdf/fpdf.php'); 
 
 // var_dump($_POST);
-/* for($i = 0; $i<count($_POST['technicianName']); $i++){
-    if(isset($_POST["mainTech$i"])){
-        var_dump($_POST["mainTech$i"]);
-        var_dump($_POST["technicianName"][$i]);
-
-    }
-    
-} */
-
 
 $customerName = '';
 $customerAddress = '';
@@ -19,16 +10,7 @@ $customerContractual = 0;
 $officeName = '';
 $officeAddress = '';
 $officeCity = '';
-
-$date = date('d.m.Y', strtotime($_POST['date']));
-$startTime = $_POST['startTime'][0];
-$finishTime = $_POST['finishTime'][0];
-$transportKm = $_POST['transportKm'];
 $workedTimeSum = 0;
-for($i=0; $i<count($_POST['finishTime']); $i++){
-    $workedTimeSum += round((strtotime($_POST['finishTime'][$i]) - strtotime($_POST['startTime'][$i])) / 3600, 1);
-}
-$transportTime = $_POST['transportTime'];
 $transportTimeSum = 0;
 
 $fP = $_POST['fp'];
@@ -114,9 +96,9 @@ class report_PDF extends FPDF{
     }
 }
 
-
 $pdf = new report_PDF('P', 'pt', 'A4');
 $pdf->AddPage(); 
+$pdf->SetAutoPageBreak(true, 40);
 $pdf->AddFont('Roboto-Regular', '', 'Roboto-Regular.php');
 $pdf->AddFont('Roboto-Bold', 'B', 'Roboto-Bold.php');
 
@@ -141,8 +123,53 @@ $sumZazTitle = ['Dátum', 'Začiatok práce', 'Koniec práce', 'Doprava km', 'Od
 $sumZazWidth = [75, 60, 60, 60, 60, 60];
 $pdf->timing($sumZazTitle, $sumZazWidth, 30, $fill = true);
 $pdf->SetFont('Roboto-Regular', '', 10);
-$sumZazData = [$date, $startTime, $finishTime, $transportKm, $workedTimeSum, $transportTime];
-$pdf->timing($sumZazData, $sumZazWidth, 30);
+
+$workers = [];
+$asd = array_unique($_POST['technicianName']);
+foreach($asd as $worker){
+    $workers[] = $worker;
+}
+/* $workers = array_filter($workers, function($name){
+    
+    if($name){
+        return true;
+    } else {
+        return false;
+    }
+    // return $newArr;
+}); */
+$workersTime = [];
+$workersTravelTime = [];
+
+for($i=0; $i<count($_POST['date']); $i++){
+    $smallestStartinTime = '23:59';
+    $largestFinishTime = '00:00';
+    $transportKm = 0;
+    $workedTimeSumDay = 0;
+    $transportTimeSumDay = 0;
+
+    foreach($workers as $worker){
+        $transportTimeSumDay += $_POST['transportTime'][$i];
+    }
+
+    for($j=0; $j<count($_POST['workDays']); $j++){
+        
+        if(strtotime($_POST['date'][$i]) == strtotime($_POST['workDays'][$j])){
+            if(strtotime($smallestStartinTime) > strtotime($_POST['startTime'][$j])){
+                $smallestStartinTime = $_POST['startTime'][$j];
+            }
+            if(strtotime($largestFinishTime) < strtotime($_POST['finishTime'][$j])){
+                $largestFinishTime = $_POST['finishTime'][$j];
+            }
+            
+            $transportKm += $_POST['transportKm'][$i];
+            $workedTimeSumDay += round((strtotime($_POST['finishTime'][$j]) - strtotime($_POST['startTime'][$j])) / 3600, 2);
+        }
+    }
+    
+    $sumZazData = [$_POST['date'][$i], $smallestStartinTime, $largestFinishTime, $transportKm, $workedTimeSumDay, $transportTimeSumDay];
+    $pdf->timing($sumZazData, $sumZazWidth, 30);
+}
 
 $pdf->SetFont('Roboto-Bold', 'B', 12);
 $pdf->Cell(75, 30, $pdf->encodHelper('F-Plyny'), '1', '', 'C');
@@ -178,34 +205,37 @@ $pdf->Cell(100, 30, $pdf->encodHelper('Meno TECHNIKA'), '1', '', 'C', true);
 $pdf->MultiCell(55, 15, $pdf->encodHelper('Odpracované Hodiny'), '1', 'C', true);
 $pdf->SetXY(549, 165);
 $pdf->MultiCell(36, 15, $pdf->encodHelper('Doprava Hodiny'), '1', 'C', true);
-// $pdf->SetXY(577, 165);
-// $pdf->MultiCell(23, 15, $pdf->encodHelper('Druh prác'), '1','C', true);
-
 
 $pdf->SetFont('Roboto-Regular', '', 10);
 $y = 195;
-for($i=0; $i<count($_POST['technicianName']); $i++){
-    $pdf->SetXY(395, $y);
-    $transportTimeSum += $transportTime;
-    $technicianName = $_POST['technicianName'];
-    $workedTime = $workedTime = round((strtotime($_POST['finishTime'][$i]) - strtotime($_POST['startTime'][$i])) / 3600, 1);
-    $pdf->timing([$_POST['technicianName'][$i], $workedTime, $transportTime], [100, 54, 36], 15);
-    $y += 15;
-    if(isset($_POST["mainTech$i"])){
-        $nameOfMainTech = $_POST['technicianName'][$i];
-    }
-    /* if($_POST['mainTech']){
-        $nameOfMainTech = $_POST['technicianName'][$i];
-    } */
-    // var_dump($_POST['technicianName']);
-    if($i == count($_POST['technicianName']) - 1){
-        $pdf->SetXY(395, $y);
-        $pdf->SetFont('Roboto-Bold', 'B', 12);
-        $pdf->timing(['Sumár spolu', $workedTimeSum, $transportTimeSum], [100, 54, 36], 15);
+// var_dump($workers);
+for($j=0; $j<count($workers); $j++){
+    for($i=0; $i<count($_POST['technicianName']); $i++){
+        if($workers[$j] == $_POST['technicianName'][$i]){
+            $workersTime['workedTime'][$workers[$j]][] = (strtotime($_POST['finishTime'][$i]) - strtotime($_POST['startTime'][$i])) / 3600;
+        }
     }
 }
-if($y < 250){
-    $pdf->SetXY(10, 280);
+
+for($i=0; $i<count($_POST['date']); $i++){
+    for($j=0; $j<count($workers); $j++){
+        $workersTime['travelTime'][$workers[$j]][] = $_POST['transportTime'][$i];
+    }
+}
+
+foreach($workers as $worker){
+    $pdf->SetXY(395, $y);
+    $pdf->timing([$worker, array_sum($workersTime['workedTime'][$worker]), array_sum($workersTime['travelTime'][$worker])], [100, 54, 36], 15);
+    $y += 15;
+    $workedTimeSum += array_sum($workersTime['workedTime'][$worker]);
+    $transportTimeSum += array_sum($workersTime['travelTime'][$worker]);
+}
+$pdf->SetXY(395, $y);
+$pdf->SetFont('Roboto-Bold', 'B', 12);
+$pdf->timing(['Sumár spolu', $workedTimeSum, $transportTimeSum], [100, 54, 36], 15);
+
+if($y < 300){
+    $pdf->SetXY(10, 310);
 } else {
     $pdf->ln(10);
 }
@@ -214,7 +244,7 @@ $pdf->SetFont('Roboto-Regular', '', 14);
 $pdf->MultiCell(575, 20, $pdf->encodHelper('Popis zásahu: ').$pdf->encodHelper($description), '1');
 
 $pdf->ln(10);
-$pdf->MultiCell(575, 20, $pdf->encodHelper('Výsledok / Odporúčania: ').$pdf->encodHelper($descriptionResult), '1');
+$pdf->MultiCell(575, 20, $pdf->encodHelper('Výsledok / Odporúčania: '.$descriptionResult), '1');
 
 $pdf->ln(10);
 $pdf->SetFont('Roboto-Regular', '', 10);
@@ -222,8 +252,8 @@ $pdf->Cell(575, 15, $pdf->encodHelper('Identifikácia ZARIADENIA'), '1', '1', 'C
 $pdf->Cell(195, 15, $pdf->encodHelper('CIAT typ:'), '1', '', 'C');
 $pdf->Cell(380, 15, $pdf->encodHelper('A.R./series N°'), '1', '1', 'C');
 $pdf->SetFont('Roboto-Bold', 'B', 12);
-$pdf->Cell(195, 15, $_POST['typDevice'], '1', '', 'C');
-$pdf->Cell(380, 15, $_POST['snDevice'], '1', '1', 'C');
+$pdf->Cell(195, 15, $pdf->encodHelper($_POST['typDevice']), '1', '', 'C');
+$pdf->Cell(380, 15, $pdf->encodHelper($_POST['snDevice']), '1', '1', 'C');
 
 $pdf->ln(10);
 $pdf->SetFont('Roboto-Regular', '', 10);
@@ -265,17 +295,24 @@ for($i=0; $i < count($_POST['nameSparePart']); $i++){
 
 $pdf->ln(10);
 $pdf->Cell(100, 30, $pdf->encodHelper('Hlavný TECHNIK:'), '1', '', 'C', true);
-$pdf->Cell(150, 30, 'Anton Yuriv', '1', '', 'C');
+$pdf->Cell(150, 30, $pdf->encodHelper($_POST['mainTech']), '1', '', 'C');
+$pdf->Image('signTech.png', $pdf->GetX()-150, $pdf->GetY()+30, 100, 50);
 $pdf->Cell(75, 30, '');
 $pdf->MultiCell(100, 15, $pdf->encodHelper('Meno zodp. osoby zákazníka:'), '1', 'C', true);
 $pdf->SetXY($pdf->GetX()+425, $pdf->GetY()-30);
-$pdf->Cell(150, 30, $pdf->GetX().$pdf->GetY(), '1', '1', 'C');
-$pdf->Cell(100, 100, $pdf->encodHelper('Podpis technika:'), '', '', 'C');
-$pdf->Cell(150, 100, $nameOfMainTech, '');
-$pdf->Image('signTech.png', 10, 600 , 400, 250);
+$pdf->Cell(150, 30, $pdf->encodHelper($_POST['nameCustomerSign']), '1', '1', 'C');
+$pdf->Image('signCustomer.png', $pdf->GetX()+460, $pdf->GetY(), 100, 50);
+
+
+
+/* $pdf->Cell(100, 100, $pdf->encodHelper('Podpis technika:'), '', '', 'C');
+$pdf->Cell(150, 100, $_POST['mainTech'], '');
+$pdf->Image('signTech.png', 10, 600 , 150, 100);
 $pdf->Cell(75, 30, '');
 $pdf->Cell(100, 100, $pdf->encodHelper('Podpis zákazníka:'), '', '', 'C');
-$pdf->Cell(150, 100, '', '');
+$pdf->Cell(150, 100, $_POST['customerSign'], '');
+$pdf->Image('signCustomer.png', 350, 600, 150, 100); */
 
 
 $pdf->Output('reciept.pdf', 'I');
+$pdf->Output('F', 'report.pdf');

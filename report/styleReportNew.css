@@ -2,6 +2,11 @@
     width:50%; 
     float:left; 
 }  */
+body{
+    width:1000px; 
+    margin:20px auto;
+    /* border:1px solid black;  */
+}
 fieldset { 
     border:1px solid #474747; 
     -moz-border-radius:5px; 
@@ -17,9 +22,20 @@ legend {
     font-weight:bold;
 } 
 #wrap { 
-    width:820px; 
+    /* width:820px;  */
     padding:20px; 
-    margin:20px auto; 
+    margin-left: 250px; 
+    
+    background:#fff; 
+    border:1px solid #ccc; 
+    -moz-border-radius:10px; 
+    -webkit-border-radius:10px; 
+} 
+#aside { 
+    width:200px; 
+    padding:20px; 
+    /* margin:20px auto;  */
+    float: left;
     background:#fff; 
     border:1px solid #ccc; 
     -moz-border-radius:10px; 
@@ -39,9 +55,9 @@ p {
 label:after { 
     content: ":"; 
 } 
-input, #customerName, #officeName, #coolant { 
+input, #customerName, #officeName, #coolant, #mainTech, .workDays { 
     display:inline; 
-    width:200px; 
+    width:180px; 
     border:1px solid #ccc; 
     padding:5px; 
     margin:0; 
@@ -70,9 +86,18 @@ button:hover {
     cursor:pointer; 
 }
 textarea{
-    width: 780px;
+    width: 670px;
     height: 100px;
 }
 .device{
     width: 370px;
+}
+.time{
+    width: 70px;
+}
+canvas{
+    background-color:#eee;
+    border: 1px solid #ccc;
+    /* width: 400px;
+    height: 250px; */
 }
